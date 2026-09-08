@@ -42,10 +42,14 @@ jobs:
           brew install we-be/tritium/tritium
           brew list --versions tritium | grep -q " ${{ steps.fetch.outputs.version }}$"
           brew test tritium
+      # setup-homebrew rewires the checkout's remote, losing the branch's
+      # upstream and the token checkout stored, so the push names both.
       - name: commit
         if: steps.fetch.outputs.changed == 'yes'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -qam "tritium v${{ steps.fetch.outputs.version }}"
-          git push origin HEAD:main   # setup-homebrew leaves the branch with no upstream
+          git push "https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY" HEAD:main
