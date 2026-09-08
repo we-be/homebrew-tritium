@@ -20,28 +20,31 @@ jobs:
       - name: fetch the latest release's formula
         id: fetch
         run: |
-          curl -fsSL -o Formula/tritium.rb https://github.com/we-be/tritium/releases/latest/download/tritium.rb
-          if git diff --quiet; then
-            echo "up to date: $(sed -n 's|.*/releases/download/v\([^/]*\)/.*|\1|p' Formula/tritium.rb | head -1)"
+          curl -fsSL -o "$RUNNER_TEMP/tritium.rb" https://github.com/we-be/tritium/releases/latest/download/tritium.rb
+          v=$(sed -n 's|.*/releases/download/v\([^/]*\)/.*|\1|p' "$RUNNER_TEMP/tritium.rb" | head -1)
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          if cmp -s "$RUNNER_TEMP/tritium.rb" Formula/tritium.rb; then
+            echo "up to date: $v"
             echo "changed=no" >> "$GITHUB_OUTPUT"
           else
             echo "changed=yes" >> "$GITHUB_OUTPUT"
           fi
       # Ubuntu runners no longer ship Homebrew. This puts one on PATH and, run
-      # inside a tap's repository, installs this checkout as that tap — so the
-      # formula just fetched is what we-be/tritium/tritium resolves to.
+      # inside a tap's repository, installs this checkout as that tap — resetting
+      # the checkout as it does, which is why the formula is copied in after it.
       - uses: Homebrew/actions/setup-homebrew@main
         if: steps.fetch.outputs.changed == 'yes'
       - name: install it
         if: steps.fetch.outputs.changed == 'yes'
         run: |
+          cp "$RUNNER_TEMP/tritium.rb" Formula/tritium.rb
           brew trust we-be/tritium 2>/dev/null || true   # Homebrew 6; older ones have no such command
           brew install we-be/tritium/tritium
+          brew list --versions tritium | grep -q " ${{ steps.fetch.outputs.version }}$"
           brew test tritium
       - name: commit
         if: steps.fetch.outputs.changed == 'yes'
         run: |
-          v=$(sed -n 's|.*/releases/download/v\([^/]*\)/.*|\1|p' Formula/tritium.rb | head -1)
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -qam "tritium v$v" && git push
+          git commit -qam "tritium v${{ steps.fetch.outputs.version }}" && git push
