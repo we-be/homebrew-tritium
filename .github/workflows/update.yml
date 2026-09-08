@@ -27,6 +27,9 @@ jobs:
           else
             echo "changed=yes" >> "$GITHUB_OUTPUT"
           fi
+      # Ubuntu runners no longer ship Homebrew; this puts one on PATH.
+      - uses: Homebrew/actions/setup-homebrew@main
+        if: steps.fetch.outputs.changed == 'yes'
       # Homebrew installs from a tap, never a bare file: stage the new formula
       # in a scratch tap on the runner and install from there.
       - name: install it
