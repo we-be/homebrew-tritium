@@ -34,6 +34,7 @@ jobs:
         run: |
           brew tap-new --no-git we-be/tritium
           cp Formula/tritium.rb "$(brew --repository we-be/tritium)/Formula/"
+          brew trust we-be/tritium 2>/dev/null || true   # Homebrew 6; older ones have no such command
           brew install we-be/tritium/tritium
           brew test tritium
       - name: commit
