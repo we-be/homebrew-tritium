@@ -27,10 +27,14 @@ jobs:
           else
             echo "changed=yes" >> "$GITHUB_OUTPUT"
           fi
+      # Homebrew installs from a tap, never a bare file: stage the new formula
+      # in a scratch tap on the runner and install from there.
       - name: install it
         if: steps.fetch.outputs.changed == 'yes'
         run: |
-          brew install --formula ./Formula/tritium.rb
+          brew tap-new --no-git we-be/tritium
+          cp Formula/tritium.rb "$(brew --repository we-be/tritium)/Formula/"
+          brew install we-be/tritium/tritium
           brew test tritium
       - name: commit
         if: steps.fetch.outputs.changed == 'yes'
