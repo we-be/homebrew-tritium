@@ -1,0 +1,41 @@
+name: update
+
+# Copies the formula the latest tritium release attaches into Formula/, once it
+# installs. Hourly, on demand, and when tritium's release workflow dispatches.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [release]
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: fetch the latest release's formula
+        id: fetch
+        run: |
+          curl -fsSL -o Formula/tritium.rb https://github.com/we-be/tritium/releases/latest/download/tritium.rb
+          if git diff --quiet; then
+            echo "up to date: $(sed -n 's/^  version "\(.*\)"/\1/p' Formula/tritium.rb)"
+            echo "changed=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=yes" >> "$GITHUB_OUTPUT"
+          fi
+      - name: install it
+        if: steps.fetch.outputs.changed == 'yes'
+        run: |
+          brew install --formula ./Formula/tritium.rb
+          brew test tritium
+      - name: commit
+        if: steps.fetch.outputs.changed == 'yes'
+        run: |
+          v=$(sed -n 's/^  version "\(.*\)"/\1/p' Formula/tritium.rb)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -qam "tritium v$v" && git push
