@@ -24,21 +24,21 @@ class Tritium < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/we-be/tritium/releases/download/v0.18.5/tritium-v0.18.5-darwin-arm64.tar.gz"
-      sha256 "aa3f98aa7f5368ac0549546e8c1fc391c43d03e206b051253100a525e86e5894"
+      url "https://github.com/we-be/tritium/releases/download/v0.18.6/tritium-v0.18.6-darwin-arm64.tar.gz"
+      sha256 "266e5aa893f6bcb3e208ac469e077b78301e146af6a83562aa81242c7f5774c8"
     else
-      url "https://github.com/we-be/tritium/releases/download/v0.18.5/tritium-v0.18.5-darwin-amd64.tar.gz"
-      sha256 "1c5131a16b90d62f3eef878d155f0b3b7852d367bb8674a1381d4d11212ea667"
+      url "https://github.com/we-be/tritium/releases/download/v0.18.6/tritium-v0.18.6-darwin-amd64.tar.gz"
+      sha256 "3171b95ebb2d903944f7b597da8e6c2969eca9c9e36b568863b9892b9e2a46b5"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/we-be/tritium/releases/download/v0.18.5/tritium-v0.18.5-linux-arm64.tar.gz"
-      sha256 "86f7ec713482b16adfc768e6a8a039d5cd0fb915b89c5fe212bb4aa8ba9c6708"
+      url "https://github.com/we-be/tritium/releases/download/v0.18.6/tritium-v0.18.6-linux-arm64.tar.gz"
+      sha256 "2460a25154d7ca7d6a318294e0191383de920f214064296abf5456f4e70e590c"
     else
-      url "https://github.com/we-be/tritium/releases/download/v0.18.5/tritium-v0.18.5-linux-amd64.tar.gz"
-      sha256 "cc693620818b9e1768f8f3de0c82902f9657e808ec63df42b2a8d802bf72631f"
+      url "https://github.com/we-be/tritium/releases/download/v0.18.6/tritium-v0.18.6-linux-amd64.tar.gz"
+      sha256 "b845687bdcbac8aa82f94ab163958057c4153e5db18aff2642cfb782ef59a3f8"
     end
   end
 
