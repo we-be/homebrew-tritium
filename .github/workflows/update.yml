@@ -12,6 +12,12 @@ on:
 permissions:
   contents: write
 
+# The hourly run and a nudged one can start together; the second would
+# push onto the first's commit and be rejected. One at a time, in turn.
+concurrency:
+  group: update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
